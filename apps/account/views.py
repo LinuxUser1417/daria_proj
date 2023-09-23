@@ -10,11 +10,19 @@ from .models import CustomUser
 
 
 class UserListView(generics.ListAPIView):
+    """
+    get:
+    Отображает список всех пользователей.
+    """
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
 class UserProfileView(generics.RetrieveAPIView):
+    """
+    get:
+    Возвращает информацию о профиле текущего аутентифицированного пользователя.
+    """
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
@@ -22,7 +30,7 @@ class UserProfileView(generics.RetrieveAPIView):
         return self.request.user
 
 class RegistrationAPIView(APIView):
-    @swagger_auto_schema(request_body=UserRegistrationSerializer)
+    @swagger_auto_schema(request_body=UserRegistrationSerializer, operation_summary='Регистрация нового пользователя', operation_description='Регистрация нового пользователя. После успешной регистрации возвращает созданный профиль пользователя. Все поля обязательны!')
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -32,7 +40,11 @@ class RegistrationAPIView(APIView):
 
 
 class LoginAPIView(APIView):
-    @swagger_auto_schema(request_body=LoginSerializer)
+    """
+    post:
+    Аутентификация пользователя. Возвращает токен доступа при успешной аутентификации. Refresh и Access
+    """
+    @swagger_auto_schema(request_body=LoginSerializer, operation_summary='Авторизация')
     def post(self, request):
         phone_number = request.data.get("phone_number")
         password = request.data.get("password")
@@ -51,7 +63,7 @@ class LoginAPIView(APIView):
 class ProfileUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(request_body=UserSerializer)
+    @swagger_auto_schema(request_body=UserSerializer, operation_summary='Обновление профиля текущего аутентифицированного пользователя', operation_description='Обновить профиль пользователя может только сам пользователь!')
     def put(self, request):
         user = request.user
         serializer = UserSerializer(user, data=request.data, partial=True)
@@ -64,32 +76,8 @@ class ProfileUpdateAPIView(APIView):
 class DeleteUserAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(request_body=UserSerializer)
+    @swagger_auto_schema(request_body=UserSerializer, operation_summary='Удаление профиля текущего аутентифицированного пользователя', operation_description='Удалить аккаунт может только сам пользователь!')
     def delete(self, request):
         user = request.user
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
-
-# class UserListCreateView(generics.ListCreateAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-
-#     @swagger_auto_schema(
-#         operation_summary="Создать нового пользователя",
-#         operation_description="Создать нового пользователя с помощью данного эндпоинта.",
-#         request_body=UserSerializer,
-#     )
-#     def create(self, request, *args, **kwargs):
-#         return super().create(request, *args, **kwargs)
-
-# class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-
-#     @swagger_auto_schema(
-#         operation_summary="Получить информацию о пользователе",
-#         operation_description="Получить информацию о пользователе по ID.",
-#     )
-#     def retrieve(self, request, *args, **kwargs):
-#         return super().retrieve(request, *args, **kwargs)
