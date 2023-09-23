@@ -1,0 +1,12 @@
+Django 
+django-ckeditor
+djangorestframework
+Pillow
+python-decouple
+djoser
+django-filter
+django-cors-headers
+djangorestframework-simplejwt
+psycopg2-binary
+drf-yasg
+gunicorn
