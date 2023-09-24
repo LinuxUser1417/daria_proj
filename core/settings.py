@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'corsheaders', 
     # my_apps
     'apps.account',
+    'apps.discussions',
 ]
 
 MIDDLEWARE = [
